@@ -1,0 +1,56 @@
+@page "/patientmgt"
+@using HealthManagementSystem.Models
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+
+<PageTitle>Login Page</PageTitle>
+
+<EditForm Model="@Patient" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label>Name</label>
+    <InputText @bind-Value="Patient.Name" />
+    <ValidationMessage For="@(() => Patient.Name)" />
+
+    <label>Email</label>
+    <InputText @bind-Value="Patient.Email" />
+    <ValidationMessage For="@(() => Patient.Email)" />
+
+    <label>Date of Birth</label>
+    <InputDate TValue="DateOnly" @bind-Value="Patient.DateOfBirth" />
+    <ValidationMessage For="@(() => Patient.DateOfBirth)" />
+
+    <button type="submit">Add Patient</button>
+
+</EditForm>
+
+
+@* <label id="login">Login</label>
+<input id="login-input" placeholder="Enter username or email">
+<label id="password">Password</label>
+<input id="password-input" placeholder="Enter your password">
+<button @onclick="LoginButton">Click here</button> *@
+
+@code { 
+
+    @* public Patient Patient{get;set;} *@
+    private Patient Patient = new Patient();
+    private async Task Submit()
+    {
+        Patient.DateOfBirth = DateOnly.FromDateTime(DateTime.Today);
+        
+        var response = await HttpClient.PostAsJsonAsync("http://localhost:5293/api/patient", Patient);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("unable to send to back end");
+        }
+        else
+        {
+            Console.WriteLine($"Successfully added {Patient.Name} to the database");
+            await JSRuntime.InvokeVoidAsync("console.log", $"Successfully added {Patient.Name} to the database" );
+        }
+    }
+    
+}
