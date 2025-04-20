@@ -1,0 +1,19 @@
+::deep form {
+    display: grid;
+    width:400px;
+    justify-self: center;
+    text-align: center;
+}
+
+::deep input[type=date]{
+    text-align: center;
+    padding-left: 35px;
+}
+
+::deep button {
+    margin-top: 20px;
+}
+
+::deep .validation-errors {
+    display: none;
+}
