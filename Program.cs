@@ -14,6 +14,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+//add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("allowAll", options =>
+    {
+        options.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin();
+    });
+});
+
 //inject HTTP client
 builder.Services.AddHttpClient();
 
@@ -26,6 +37,9 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 //services for swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//add scope
+builder.Services.AddScoped(sp => new HttpClient {BaseAddress = new Uri("http://localhost:5293")});
 
 var app = builder.Build();
 
@@ -48,6 +62,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
+
+//use CORS
+app.UseCors("allowAll");
 
 // app.MapStaticAssets();
 app.UseStaticFiles();

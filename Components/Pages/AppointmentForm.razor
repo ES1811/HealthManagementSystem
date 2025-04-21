@@ -1,0 +1,133 @@
+@page "/book-appointment"
+@inject HttpClient HttpClient
+@using HealthManagementSystem.Models
+@using HealthManagementSystem.DTOs
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@using System.Text.Json
+
+<PageTitle>Book An Appointment</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger mt-5">@errorMessage</div>
+}
+
+<div class="container mt-5">
+    <div class="row align-items-stretch">
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2><span class="app-text">Appointment Schedule</span></h2>
+            <p class="schedule-text">Schedule an appointment with one of our specialists for personalized medical care.</p>
+            <div id="form">
+                <EditForm Model="@Appointment" OnValidSubmit="BookAppointment" FormName="AppointmentForm" class="mb-3">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <label class="form-label">Enter Name:</label>
+                    <InputText @bind-Value="Patient.Name" class="form-control" />
+                    <ValidationMessage For="@(() => Patient.Name)" />
+
+                    <label class="form-label">Enter Your Email:</label>
+                    <InputText @bind-Value="Patient.Email" class="form-control" />
+                    <ValidationMessage For="@(() => Patient.Email)" />
+
+                    <label class="form-label">Enter Your Birth Date</label>
+                    <InputDate TValue="DateOnly" @bind-Value="Patient.DateOfBirth" class="form-control" />
+                    <ValidationMessage For="@(() => Patient.DateOfBirth)" />
+
+                    <label class="form-label">Select Appointment Date:</label>
+                    <InputDate TValue="DateTime" @bind-Value="Appointment.AppointmentDate" class="form-control" />
+                    <ValidationMessage For="@(() => Appointment.AppointmentDate)" />
+
+                    <label class="form-label">Please choose a Doctor:</label>
+                    <InputSelect @bind-Value="@selectDoctorId" class="form-select">
+                        <option value="">--Select a Doctor--</option>
+                        @foreach (var doctor in availableDoctors)
+                        {
+                            <option value="@doctor.Id">@doctor.Name (@doctor.Specialization)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => selectDoctorId)" />
+
+                    <button type="submit" class="btn btn-primary">Confirm Appointment</button>
+                </EditForm>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <div class="appointment-info text-center">
+                <img src="images/other/clinic-reception.jpg" class="img-fluid rounded" alt="Clinic Appointment">
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Appointment Appointment = new Appointment();
+    private Doctor Doctor = new Doctor();
+    private Patient Patient = new Patient();
+    private int selectDoctorId;
+    private List<Doctor> availableDoctors = new List<Doctor>();
+    private string? selectedSpecs;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        availableDoctors = await HttpClient.GetFromJsonAsync<List<Doctor>>("http://localhost:5293/api/doctor");
+    }
+    private async Task UpdateDoctorList()
+    {
+        if (!string.IsNullOrEmpty(selectedSpecs))
+        {
+            availableDoctors = await HttpClient.GetFromJsonAsync<List<Doctor>>($"http://localhost:5293/api/doctor/specialization?specialization={selectedSpecs}");
+            Console.WriteLine($"Doctors count: {availableDoctors.Count}");
+            await JSRuntime.InvokeVoidAsync("console.log", $"Doctors count: {availableDoctors.Count}");
+
+        }
+    }
+    private async Task BookAppointment()
+    {
+        var newPatient = await HttpClient.PostAsJsonAsync("http://localhost:5293/api/patient", Patient);
+
+        if (!newPatient.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", "failed to create patient");
+            errorMessage = "Please fill out all the fields properly.";
+
+            return;
+        }
+
+        var createdPatient = await newPatient.Content.ReadFromJsonAsync<Patient>();
+        int patientId = createdPatient.Id;
+
+        var appointmentDto = new AppointmentDTO
+        {
+            PatientId = patientId,
+            DoctorId = selectDoctorId,
+            AppointmentDate = Appointment.AppointmentDate
+        };
+
+        if(Appointment.AppointmentDate <= DateTime.Now)
+        {
+            errorMessage = "Invalid appointment date. Please select a future date.";
+            return;
+        }
+
+        var json = JsonSerializer.Serialize(appointmentDto, new JsonSerializerOptions { WriteIndented = true });
+
+        var appResponse = await HttpClient.PostAsJsonAsync("http://localhost:5293/api/appointment", appointmentDto);
+        var responseBody = await appResponse.Content.ReadAsStringAsync();
+
+        Console.WriteLine($"response: {appResponse}");
+        Console.WriteLine($"response body: {responseBody}");
+
+        if (!appResponse.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Appointment creation failed");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", "Appointment successfully created");
+        }
+    }
+}

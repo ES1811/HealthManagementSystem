@@ -5,10 +5,10 @@ namespace HealthManagementSystem.DTOs
 {
     public class PatientDTO
     {
-        public int Id {get;set;}
-        public string Name {get;set;}
-        public string Email {get;set;}
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
         [DataType(DataType.Date)]
-        public DateOnly DateOfBirth {get;set;}
+        public DateOnly DateOfBirth { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace HealthManagementSystem.Controllers
 
             await _ctx.Patients.AddAsync(newPatient);
             await _ctx.SaveChangesAsync();
-            return StatusCode(201, new { Message = "Patient successfully added" });
+            return CreatedAtAction(nameof(GetPatientById), new { id = newPatient.Id }, newPatient);
         }
         //modify a patient by id
         [HttpPut("{id:int}")]

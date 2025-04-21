@@ -50,6 +50,18 @@ namespace HealthManagementSystem.Controllers
             }
             return Ok(doctor);
         }
+        //find a doctor by their specialization
+        [HttpGet("specialization")]
+        public async Task<ActionResult<List<Doctor>>> GetDoctorBySpecializations(string specialization)
+        {
+            var doctor = await _ctx.Doctors.Where(s => s.Specialization == specialization).ToListAsync();
+            
+            if(doctor.Count == 0)
+            {
+                return NotFound("No doctors found");
+            }
+            return Ok(doctor);
+        }
         //add a doctor
         [HttpPost]
         public async Task<ActionResult<Doctor>> CreateDoctor([FromBody] DoctorDTO doctorDTO)
@@ -60,7 +72,7 @@ namespace HealthManagementSystem.Controllers
                 return BadRequest($"Doctor with license number {doctorDTO.LicenseNumber} already exists");
             }
 
-            //generate the License, see line 139
+            //generate the License, see line 151
             string licenseGenerated = GenerateLicense();
 
             if (string.IsNullOrEmpty(doctorDTO.LicenseNumber))

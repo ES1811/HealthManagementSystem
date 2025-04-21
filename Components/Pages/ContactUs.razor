@@ -1,0 +1,61 @@
+@page "/contact"
+@inject HttpClient HttpClient
+@rendermode InteractiveServer
+
+<PageTitle>Contact</PageTitle>
+
+<div class="container mt-5">
+    <div class="row d-flex align-items-stretch">
+        <div class="col-md-5">
+            <div class="intro-text">
+                <img src="images/other/clinic-photo.jpg" class="img-fluid rounded" alt="Clinic">
+                <p>Thank you for taking your time to visit our Clinic. We will try to contact you back as soon as
+                    possible.</p>
+                <div class="opening-hours">
+                    <p><b>Opening hours</b></p>
+                    <p>Monday – Friday: 8:00 – 16:00</p>
+                    <p>Saturday: 9:00 – 13:00</p>
+                    <p>Sunday: Closed</p>
+                    <p>Phone: 123-456-789</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2><span class="contact-text">Contact Us</span></h2>
+            <p>Have questions? Feel free to reach out using the form below.</p>
+
+            <form>
+                <div class="mb-3">
+                    <label class="form-label" for="firstName">First Name</label>
+                    <input type="text" class="form-control" id="firstName" placeholder="Enter your first name">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="lastName">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" placeholder="Enter your last name">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="message">Your Message</label>
+                    <textarea class="form-control" id="message" rows="6"
+                        placeholder="Write your message here"></textarea>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="showSuccessMessage()">Submit</button>
+            </form>
+
+            <div id="successMessage" class="mt-3 text-success" style="display: none;">
+                Your message has been sent! We will contact you back very soon. Thank you!
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

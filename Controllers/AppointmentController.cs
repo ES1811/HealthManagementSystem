@@ -41,20 +41,35 @@ namespace HealthManagementSystem.Controllers
         }
         //create an appointment
         [HttpPost]
-        public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment app)
-        {
-            var existingDoctor = await _ctx.Doctors.AnyAsync(i => i.Id == app.DoctorId);
-            var existingPatient = await _ctx.Patients.AnyAsync(i => i.Id == app.PatientId);
+        public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] AppointmentDTO appDTO)
+        {          
+            //make sure it actually exists or if it has correct date
+            if(appDTO == null || appDTO.AppointmentDate <= DateTime.Now)
+            {
+                return BadRequest("Invalid appointment details.");
+            }
+
+            //check if either doctor or patient exist
+            var existingDoctor = await _ctx.Doctors.AnyAsync(d => d.Id == appDTO.DoctorId);
+            var existingPatient = await _ctx.Patients.AnyAsync(p => p.Id == appDTO.PatientId);
 
             if(!existingDoctor || !existingPatient)
             {
-                return BadRequest("There's no Doctor or Patient");
+                return BadRequest("Invalid Doctor or Patient.");
             }
 
-            _ctx.Appointments.Add(app);
+            //creating the appointment
+            var newAppointment = new Appointment
+            {
+                PatientId = appDTO.PatientId,
+                DoctorId = appDTO.DoctorId,
+                AppointmentDate = appDTO.AppointmentDate
+            };
+
+            await _ctx.Appointments.AddAsync(newAppointment);
             await _ctx.SaveChangesAsync();
 
-            return StatusCode(201, new{ Message = "Appointment successfully created"});
+            return CreatedAtAction(nameof(GetAppointments), new { id = newAppointment.Id }, newAppointment);
         }
     }
 }

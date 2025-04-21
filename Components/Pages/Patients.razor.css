@@ -3,15 +3,22 @@
     width:400px;
     justify-self: center;
     text-align: center;
+    margin: auto;
+}
+
+::deep label {
+    margin-bottom: 5px;
+    padding-top: 5px;
 }
 
 ::deep input[type=date]{
     text-align: center;
     padding-left: 35px;
+    margin-top: 5px;
 }
 
 ::deep button {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 ::deep .validation-errors {

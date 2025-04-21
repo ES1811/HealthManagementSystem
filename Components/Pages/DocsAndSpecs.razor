@@ -1,0 +1,52 @@
+@page "/doctors-specializations"
+@inject HttpClient HttpClient
+
+<PageTitle>Doctors & Specializations</PageTitle>
+
+<div class="container mt-5">
+    <h2 class="text-center"><span class="spec-text">Meet Our Specialists</span></h2>
+    <p class="clinic-description">At <span class="clinic-name">Serenity Health Clinic</span>, we're dedicated to providing compassionate, comprehensive care through a team of skilled doctors across a wide range of specialties. Whether you’re seeking routine check-ups or advanced medical treatment, our specialists work together to ensure personalized care tailored to your unique needs. Your health and well-being are at the heart of everything we do.</p>
+    <div class="row">
+        @foreach (var doctor in availableDoctors)
+        {
+            <div class="col-md-4">
+                <div class="card doctor-card">
+                    <img src="@doctorPictures.GetValueOrDefault(doctor.Id, "images/doctors/default.jpg")" class="doctor-pics">
+                    <div class="card-body">
+                        <h5 class="card-title">@doctor.Name</h5>
+                        <p class="card-text spec"><strong>Specialization:</strong> @doctor.Specialization</p>
+                        <p class="card-text desc">@doctorDescriptions.GetValueOrDefault(doctor.Id,"No description available")</p>
+                        <div class="mt-auto">
+                            <NavLink class="btn btn-outline-primary" href="book-appointment">Book Appointment</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Doctor> availableDoctors = new List<Doctor>();
+    //manually add descriptions to the doctors as I don't have in my database/backend
+    private Dictionary<int, string> doctorDescriptions = new Dictionary<int, string>();
+    private Dictionary<int, string> doctorPictures = new Dictionary<int, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        availableDoctors = await HttpClient.GetFromJsonAsync<List<Doctor>>("http://localhost:5293/api/doctor");
+
+        doctorDescriptions = new Dictionary<int, string>
+            {
+                {1, "Dr. Doe has over 15 years of experience in cardiovascular medicine. His expertise includes heart disease prevention, arrhythmia management, and non-invasive heart procedures. He is known for his patient-focused approach, ensuring every individual receives tailored care for optimal heart health."},
+                {2, "Dr. Landvik is a leading gynecologist with a focus on reproductive health and prenatal care. She has worked extensively in maternal healthcare, helping countless patients navigate pregnancy and fertility treatments. Her compassionate approach makes her highly sought after for both routine and specialized gynecological care."},
+                {3, "Dr. Helgesen specializes in diagnosing and treating neurological disorders, including migraines, epilepsy, and Parkinson’s disease. With a deep understanding of brain function and neurodegenerative conditions, he’s committed to providing cutting-edge treatments while ensuring patients receive comprehensive, personalized care."}
+            };
+        doctorPictures = new Dictionary<int, string>
+            {
+                {1, "images/doctors/cardiologist.jpg"},
+                {2, "images/doctors/gynecologist.jpg"},
+                {3, "images/doctors/neurologist.jpg"}
+            };
+    }
+}
