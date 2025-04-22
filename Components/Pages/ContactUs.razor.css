@@ -56,3 +56,8 @@
 ::deep .btn-primary:hover {
     background-color: #12527c;
 }
+
+::deep #successMessage {
+    text-align: center;
+    font-size: large;
+}

@@ -1,6 +1,6 @@
 @page "/contact"
-@inject HttpClient HttpClient
 @rendermode InteractiveServer
+@inherits LayoutComponentBase
 
 <PageTitle>Contact</PageTitle>
 
@@ -46,16 +46,22 @@
                         placeholder="Write your message here"></textarea>
                 </div>
 
-                <button type="button" class="btn btn-primary" onclick="showSuccessMessage()">Submit</button>
+                <button type="button" class="btn btn-primary" @onclick="showSuccessMessage">Submit</button>
             </form>
-
-            <div id="successMessage" class="mt-3 text-success" style="display: none;">
-                Your message has been sent! We will contact you back very soon. Thank you!
-            </div>
         </div>
+        <div class="mt-3 text-success" id="successMessage">
+                @SuccessMessage
+            </div>
     </div>
 </div>
 
 @code {
+    private string Style;
+    private string SuccessMessage;
 
+    void showSuccessMessage()
+    {
+        SuccessMessage = "Your message has been sent! We will contact you back very soon. Thank you!";
+
+    }
 }

@@ -7,7 +7,61 @@
     <h2 class="text-center"><span class="spec-text">Meet Our Specialists</span></h2>
     <p class="clinic-description">At <span class="clinic-name">Serenity Health Clinic</span>, we're dedicated to providing compassionate, comprehensive care through a team of skilled doctors across a wide range of specialties. Whether you’re seeking routine check-ups or advanced medical treatment, our specialists work together to ensure personalized care tailored to your unique needs. Your health and well-being are at the heart of everything we do.</p>
     <div class="row">
-        @foreach (var doctor in availableDoctors)
+        @try 
+        {
+            @if(availableDoctors.Count > 0)
+            {
+                <div class="col-md-4">
+                    <div class="card doctor-card">
+                        <img src="@doctorPictures.GetValueOrDefault(1, "images/doctors/default.jpg")" class="doctor-pics">
+                        <div class="card-body">
+                            <h5 class="card-title">@availableDoctors[0].Name</h5>
+                            <p class="card-text spec"><strong>Specialization:</strong> @availableDoctors[0].Specialization</p>
+                            <p class="card-text desc">@doctorDescriptions.GetValueOrDefault(1,"No description available")</p>
+                            <div class="mt-auto">
+                                <NavLink class="btn btn-outline-primary" href="book-appointment">Book Appointment</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card doctor-card">
+                        <img src="@doctorPictures.GetValueOrDefault(2, "images/doctors/default.jpg")" class="doctor-pics">
+                        <div class="card-body">
+                            <h5 class="card-title">@availableDoctors[1].Name</h5>
+                            <p class="card-text spec"><strong>Specialization:</strong> @availableDoctors[1].Specialization</p>
+                            <p class="card-text desc">@doctorDescriptions.GetValueOrDefault(2,"No description available")</p>
+                            <div class="mt-auto">
+                                <NavLink class="btn btn-outline-primary" href="book-appointment">Book Appointment</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card doctor-card">
+                        <img src="@doctorPictures.GetValueOrDefault(3, "images/doctors/default.jpg")" class="doctor-pics">
+                        <div class="card-body">
+                            <h5 class="card-title">@availableDoctors[2].Name</h5>
+                            <p class="card-text spec"><strong>Specialization:</strong> @availableDoctors[2].Specialization</p>
+                            <p class="card-text desc">@doctorDescriptions.GetValueOrDefault(3,"No description available")</p>
+                            <div class="mt-auto">
+                                <NavLink class="btn btn-outline-primary" href="book-appointment">Book Appointment</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else 
+            {
+                throw new InvalidOperationException("An error has occurred, please try again later.");
+            }
+        } 
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        @*------ removing foreach loop since I don't really need/want a dynamic list of Doctors ------*@
+        @* @foreach (var doctor in availableDoctors)
         {
             <div class="col-md-4">
                 <div class="card doctor-card">
@@ -22,11 +76,13 @@
                     </div>
                 </div>
             </div>
-        }
+        } *@
     </div>
 </div>
 
+
 @code {
+    private Doctor Doctor = new Doctor();
     private List<Doctor> availableDoctors = new List<Doctor>();
     //manually add descriptions to the doctors as I don't have in my database/backend
     private Dictionary<int, string> doctorDescriptions = new Dictionary<int, string>();
@@ -38,9 +94,9 @@
 
         doctorDescriptions = new Dictionary<int, string>
             {
-                {1, "Dr. Doe has over 15 years of experience in cardiovascular medicine. His expertise includes heart disease prevention, arrhythmia management, and non-invasive heart procedures. He is known for his patient-focused approach, ensuring every individual receives tailored care for optimal heart health."},
-                {2, "Dr. Landvik is a leading gynecologist with a focus on reproductive health and prenatal care. She has worked extensively in maternal healthcare, helping countless patients navigate pregnancy and fertility treatments. Her compassionate approach makes her highly sought after for both routine and specialized gynecological care."},
-                {3, "Dr. Helgesen specializes in diagnosing and treating neurological disorders, including migraines, epilepsy, and Parkinson’s disease. With a deep understanding of brain function and neurodegenerative conditions, he’s committed to providing cutting-edge treatments while ensuring patients receive comprehensive, personalized care."}
+                {1, $"Dr. {availableDoctors[0].Name} has over 15 years of experience in cardiovascular medicine. His expertise includes heart disease prevention, arrhythmia management, and non-invasive heart procedures. He is known for his patient-focused approach, ensuring every individual receives tailored care for optimal heart health."},
+                {2, $"Dr. {availableDoctors[1].Name} is a leading gynecologist with a focus on reproductive health and prenatal care. She has worked extensively in maternal healthcare, helping countless patients navigate pregnancy and fertility treatments. Her compassionate approach makes her highly sought after for both routine and specialized gynecological care."},
+                {3, $"Dr. {availableDoctors[2].Name} specializes in diagnosing and treating neurological disorders, including migraines, epilepsy, and Parkinson’s disease. With a deep understanding of brain function and neurodegenerative conditions, he’s committed to providing cutting-edge treatments while ensuring patients receive comprehensive, personalized care."}
             };
         doctorPictures = new Dictionary<int, string>
             {
